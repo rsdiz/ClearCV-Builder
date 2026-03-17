@@ -1,6 +1,7 @@
 """PDF rendering for the resume builder."""
 
 from fpdf import FPDF
+from fpdf.enums import XPos, YPos
 
 from .constants import PDF_DASH
 
@@ -47,7 +48,7 @@ class ResumePDF(FPDF):
         self.ln(3)
         self.set_font(self.FONT_FAMILY, "B", 11)
         self.set_text_color(30, 30, 30)
-        self.cell(0, 7, sanitise(title.upper()), ln=True)
+        self.cell(0, 7, sanitise(title.upper()), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         self.set_draw_color(60, 60, 60)
         self.set_line_width(self.RULE_THICKNESS)
         self.line(self.MARGIN, self.get_y(), self.w - self.MARGIN, self.get_y())
@@ -58,7 +59,7 @@ class ResumePDF(FPDF):
         self.set_text_color(50, 50, 50)
         x_pos = self.get_x() + 4
         self.set_x(x_pos)
-        self.cell(5, 5, chr(149), ln=False)
+        self.cell(5, 5, chr(149), new_x=XPos.RIGHT, new_y=YPos.TOP)
         self.multi_cell(0, 5, sanitise(text))
         self.set_x(self.MARGIN)
 
@@ -73,12 +74,12 @@ def generate_pdf(data: dict) -> bytes:
 
     pdf.set_font(font_family, "B", 22)
     pdf.set_text_color(15, 15, 15)
-    pdf.cell(0, 10, sanitise(data["full_name"]), ln=True, align="C")
+    pdf.cell(0, 10, sanitise(data["full_name"]), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
     if data["professional_title"]:
         pdf.set_font(font_family, "I", 12)
         pdf.set_text_color(80, 80, 80)
-        pdf.cell(0, 6, sanitise(data["professional_title"]), ln=True, align="C")
+        pdf.cell(0, 6, sanitise(data["professional_title"]), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
     contact_parts = [data["email"], data["phone"], data["location"], data["linkedin"]]
     contact_parts = [sanitise(part) for part in contact_parts if part]
@@ -115,12 +116,12 @@ def generate_pdf(data: dict) -> bytes:
             title_company = sanitise(experience["title"])
             if experience.get("company"):
                 title_company += PDF_DASH + sanitise(experience["company"])
-            pdf.cell(0, 6, title_company, ln=False)
+            pdf.cell(0, 6, title_company, new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             if experience.get("dates"):
                 pdf.set_font(font_family, "I", 9)
                 pdf.set_text_color(90, 90, 90)
-                pdf.cell(0, 6, sanitise(experience["dates"]), ln=True, align="R")
+                pdf.cell(0, 6, sanitise(experience["dates"]), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="R")
             else:
                 pdf.ln(6)
 
@@ -140,11 +141,11 @@ def generate_pdf(data: dict) -> bytes:
             degree_institution = sanitise(education.get("degree", ""))
             if education.get("institution"):
                 degree_institution += PDF_DASH + sanitise(education["institution"])
-            pdf.cell(0, 6, degree_institution, ln=False)
+            pdf.cell(0, 6, degree_institution, new_x=XPos.RIGHT, new_y=YPos.TOP)
             if education.get("grad_year"):
                 pdf.set_font(font_family, "I", 9)
                 pdf.set_text_color(90, 90, 90)
-                pdf.cell(0, 6, sanitise(str(education["grad_year"])), ln=True, align="R")
+                pdf.cell(0, 6, sanitise(str(education["grad_year"])), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="R")
             else:
                 pdf.ln(6)
             pdf.ln(2)
@@ -165,7 +166,7 @@ def generate_pdf(data: dict) -> bytes:
             pdf.set_xy(margin, row_y)
             pdf.set_font(font_family, "B", 9.5)
             pdf.set_text_color(40, 40, 40)
-            pdf.cell(label_width, 5.5, sanitise(category) + ":", ln=False)
+            pdf.cell(label_width, 5.5, sanitise(category) + ":", new_x=XPos.RIGHT, new_y=YPos.TOP)
             pdf.set_xy(margin, row_bottom)
         pdf.ln(2)
 
@@ -177,11 +178,11 @@ def generate_pdf(data: dict) -> bytes:
             cert_line = sanitise(certification.get("name", ""))
             if certification.get("issuer"):
                 cert_line += PDF_DASH + sanitise(certification["issuer"])
-            pdf.cell(0, 6, cert_line, ln=False)
+            pdf.cell(0, 6, cert_line, new_x=XPos.RIGHT, new_y=YPos.TOP)
             if certification.get("year"):
                 pdf.set_font(font_family, "I", 9)
                 pdf.set_text_color(90, 90, 90)
-                pdf.cell(0, 6, sanitise(str(certification["year"])), ln=True, align="R")
+                pdf.cell(0, 6, sanitise(str(certification["year"])), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="R")
             else:
                 pdf.ln(6)
         pdf.ln(2)
