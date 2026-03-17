@@ -1,33 +1,101 @@
 # ATS-Friendly Resume Builder
 
-Streamlit app for building a clean, ATS-focused resume and exporting it as PDF.
+ATS-Friendly Resume Builder is a Streamlit application for drafting a clean, single-column resume, reviewing common ATS issues, and exporting the final document to PDF.
+
+## Why This Project Exists
+
+Many resume tools optimize for visual styling first and machine readability second. This project takes the opposite approach:
+
+- Keep the layout simple and ATS-friendly
+- Help users catch weak or incomplete resume data early
+- Make resume data portable with JSON import and export
+- Generate a straightforward PDF without unnecessary formatting noise
 
 ## Features
 
-- Guided multi-step resume builder
-- ATS-oriented coaching tips
-- Categorized skills, certifications, languages, and profile links
-- JSON import/export for saving progress
-- Sample resume loader for quick testing
-- One-click PDF generation with `fpdf2`
+- Guided resume builder for core resume sections
+- Inline validation for common formatting issues
+- ATS-oriented coaching and content checks
+- Sample resume loader for demos and quick testing
+- JSON import and export for saving progress
+- PDF export powered by `fpdf2`
+- Modular codebase organized under `resume_builder/`
 
-## Run Locally
+## Tech Stack
+
+- Python
+- Streamlit
+- `fpdf2`
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+ recommended
+
+### Installation
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+### Run Locally
+
+```bash
 streamlit run app.py
 ```
 
-## Workflow
+Open the local Streamlit URL shown in the terminal, usually `http://localhost:8501`.
 
-1. Fill out each section in the sidebar flow.
-2. Use `Load Sample` if you want example content immediately.
-3. Export your data as JSON to save progress.
-4. Generate the PDF from `Preview & Download`.
+## How To Use
 
-## Project Notes
+1. Start the app with `streamlit run app.py`.
+2. Fill out the resume sections from the sidebar.
+3. Use `Load Sample` if you want example data immediately.
+4. Export your resume data to JSON to save work in progress.
+5. Review the preview and generate the PDF from `Preview & Download`.
 
-- The PDF output is intentionally single-column and simple for ATS compatibility.
-- Unicode content is sanitized before PDF generation to avoid font encoding issues.
+## Project Structure
+
+```text
+.
+├── app.py
+├── requirements.txt
+└── resume_builder/
+    ├── app.py
+    ├── constants.py
+    ├── data.py
+    ├── pdf.py
+    ├── ui.py
+    ├── utils.py
+    └── validation.py
+```
+
+## Development
+
+Install dependencies and run the app locally:
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Basic syntax verification:
+
+```bash
+python -m py_compile app.py resume_builder/*.py
+```
+
+## Contributing
+
+Contributions are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.
+
+For community expectations, see [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md).
+
+To report a security issue, use [SECURITY.md](./SECURITY.md).
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE).
