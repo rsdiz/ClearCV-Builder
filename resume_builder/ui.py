@@ -36,17 +36,20 @@ def render_sidebar():
         navigation_items = _section_navigation_items()
         suggested_section = _suggested_section(navigation_items)
         current_index = SECTION_KEYS.index(st.session_state.current_section) + 1
+        ready_sections = sum(1 for item in navigation_items if item["state"] == "complete")
 
         st.markdown(
-            "<div style='padding:1rem 1rem 0.25rem 1rem;background:var(--clearcv-surface);"
-            "border:1px solid var(--clearcv-border);border-radius:18px'>"
-            "<p style='margin:0;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--clearcv-muted)'>ClearCV Builder</p>"
-            f"<h2 style='margin:0.25rem 0 0 0;color:var(--clearcv-text)'>📋 {escape(t('app.hero_title'))}</h2>"
-            f"<p style='color:var(--clearcv-muted);font-size:0.9rem;margin:0.35rem 0 0 0'>{escape(t('app.subtitle'))}</p>"
+            "<div class='clearcv-sidebar-panel'>"
+            f"<p class='clearcv-sidebar-kicker'>{escape(t('app.brand_label'))}</p>"
+            f"<h2 class='clearcv-sidebar-title'>⌁ {escape(t('app.hero_title'))}</h2>"
+            f"<p class='clearcv-sidebar-copy'>{escape(t('app.subtitle'))}</p>"
+            "<div class='clearcv-sidebar-grid'>"
+            f"<div class='clearcv-sidebar-chip'><span>{escape(t('app.active_section'))}</span><strong>{escape(section_label(st.session_state.current_section))}</strong></div>"
+            f"<div class='clearcv-sidebar-chip'><span>{escape(t('app.sections_ready'))}</span><strong>{ready_sections}/{len(navigation_items)}</strong></div>"
+            "</div>"
             "</div>",
             unsafe_allow_html=True,
         )
-        st.divider()
 
         selected_language = st.selectbox(
             t("app.language_label"),
@@ -60,12 +63,11 @@ def render_sidebar():
 
         progress = calculate_progress()
         st.markdown(
-            f"<div style='padding:0.85rem 1rem;background:var(--clearcv-progress);color:white;border-radius:18px'>"
-            f"<p style='margin:0;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--clearcv-progress-muted)'>{escape(t('app.progress_title'))}</p>"
-            f"<div style='display:flex;justify-content:space-between;align-items:end;gap:1rem'>"
-            f"<div><p style='margin:0.2rem 0 0 0;font-size:1.6rem;font-weight:700'>{int(progress * 100)}%</p></div>"
-            f"<p style='margin:0;font-size:0.86rem;color:var(--clearcv-progress-muted)'>{escape(t('app.step_of', current=current_index, total=len(SECTION_KEYS)))}</p>"
-            f"</div></div>",
+            "<div class='clearcv-sidebar-panel'>"
+            f"<p class='clearcv-sidebar-kicker'>{escape(t('app.progress_title'))}</p>"
+            f"<h3 class='clearcv-sidebar-title'>{int(progress * 100)}%</h3>"
+            f"<p class='clearcv-sidebar-copy'>{escape(t('app.step_of', current=current_index, total=len(SECTION_KEYS)))}</p>"
+            "</div>",
             unsafe_allow_html=True,
         )
         st.progress(progress)
@@ -80,8 +82,7 @@ def render_sidebar():
                 st.session_state.current_section = suggested_section
                 st.rerun()
 
-        st.divider()
-
+        st.markdown("<div class='clearcv-divider'></div>", unsafe_allow_html=True)
         st.caption(t("app.navigator"))
         for index, item in enumerate(navigation_items, start=1):
             active = item["label"] == st.session_state.current_section
@@ -97,13 +98,13 @@ def render_sidebar():
             card_border = "var(--clearcv-accent)" if active else "var(--clearcv-border)"
 
             st.markdown(
-                "<div style='padding:0.85rem 0.9rem;border-radius:18px;margin-bottom:0.45rem;"
-                f"background:{card_bg};border:1px solid {card_border}'>"
+                "<div class='clearcv-sidebar-panel' style='margin-bottom:0.45rem;"
+                f"background:{card_bg};border-color:{card_border}'>"
                 "<div style='display:flex;justify-content:space-between;align-items:flex-start;gap:0.8rem'>"
                 "<div>"
-                f"<p style='margin:0;font-size:0.76rem;color:var(--clearcv-muted);text-transform:uppercase;letter-spacing:0.08em'>{escape(t('app.step_of', current=index, total=len(navigation_items)))}</p>"
-                f"<p style='margin:0.15rem 0 0 0;font-size:1rem;font-weight:700;color:var(--clearcv-text)'>{item['icon']} {escape(section_label(item['label']))}</p>"
-                f"<p style='margin:0.3rem 0 0 0;font-size:0.84rem;color:var(--clearcv-muted)'>{escape(item['summary'])}</p>"
+                f"<p class='clearcv-sidebar-kicker'>{escape(t('app.step_of', current=index, total=len(navigation_items)))}</p>"
+                f"<p class='clearcv-sidebar-title' style='font-size:1rem'>{item['icon']} {escape(section_label(item['label']))}</p>"
+                f"<p class='clearcv-sidebar-copy'>{escape(item['summary'])}</p>"
                 "</div>"
                 f"<span style='display:inline-block;padding:0.25rem 0.55rem;border-radius:999px;background:{badge_bg};"
                 f"color:{badge_color};font-size:0.72rem;font-weight:700;white-space:nowrap'>{escape(item['status'])}</span>"
@@ -117,8 +118,7 @@ def render_sidebar():
                 st.session_state.current_section = item["label"]
                 st.rerun()
 
-        st.divider()
-
+        st.markdown("<div class='clearcv-divider'></div>", unsafe_allow_html=True)
         st.caption(t("app.workspace"))
         col_load, col_reset = st.columns(2)
         with col_load:
@@ -150,14 +150,21 @@ def render_sidebar():
             except json.JSONDecodeError:
                 st.error(t("app.invalid_json"))
 
-        st.divider()
+        st.markdown("<div class='clearcv-divider'></div>", unsafe_allow_html=True)
         st.caption(t("app.tip_complete_sections"))
 
 
 def render_personal_info():
     """Render the personal information section."""
-    st.header(t("personal.header"))
-    st.caption(t("personal.caption"))
+    _render_section_intro(
+        "◈",
+        t("personal.header"),
+        t("personal.caption"),
+        _section_badges(
+            (t("app.signal_label"), t("personal.full_name").replace(" *", "")),
+            (t("app.priority_label"), t("app.priority_personal")),
+        ),
+    )
 
     col1, col2 = st.columns(2)
     with col1:
@@ -214,8 +221,15 @@ def render_personal_info():
 
 def render_experience():
     """Render the experience section."""
-    st.header(t("experience.header"))
-    st.caption(t("experience.caption"))
+    _render_section_intro(
+        "⌁",
+        t("experience.header"),
+        t("experience.caption"),
+        _section_badges(
+            (t("app.signal_label"), str(len(st.session_state.experiences))),
+            (t("app.priority_label"), t("app.priority_metrics")),
+        ),
+    )
 
     for idx, experience in enumerate(st.session_state.experiences):
         with st.expander(
@@ -290,8 +304,15 @@ def render_experience():
 
 def render_education():
     """Render the education section."""
-    st.header(t("education.header"))
-    st.caption(t("education.caption"))
+    _render_section_intro(
+        "△",
+        t("education.header"),
+        t("education.caption"),
+        _section_badges(
+            (t("app.signal_label"), str(len(st.session_state.educations))),
+            (t("app.priority_label"), t("app.priority_accuracy")),
+        ),
+    )
 
     for idx, education in enumerate(st.session_state.educations):
         with st.expander(
@@ -355,8 +376,15 @@ def render_education():
 
 def render_skills():
     """Render the skills section."""
-    st.header(t("skills.header"))
-    st.caption(t("skills.caption"))
+    _render_section_intro(
+        "✦",
+        t("skills.header"),
+        t("skills.caption"),
+        _section_badges(
+            (t("app.signal_label"), str(len(all_skills_flat()))),
+            (t("app.priority_label"), t("app.priority_keywords")),
+        ),
+    )
 
     for category in list(st.session_state.skill_categories.keys()):
         with st.container(border=True):
@@ -432,8 +460,20 @@ def render_skills():
 
 def render_extras():
     """Render the optional extras section."""
-    st.header(t("extras.header"))
-    st.caption(t("extras.caption"))
+    extras_total = (
+        len(st.session_state.extra_links)
+        + len(st.session_state.languages)
+        + len(st.session_state.certifications)
+    )
+    _render_section_intro(
+        "◎",
+        t("extras.header"),
+        t("extras.caption"),
+        _section_badges(
+            (t("app.signal_label"), str(extras_total)),
+            (t("app.priority_label"), t("app.priority_trust")),
+        ),
+    )
 
     st.subheader(t("extras.links_title"))
     st.caption(t("extras.links_caption"))
@@ -531,7 +571,16 @@ def render_extras():
 
 def render_preview_download():
     """Render preview, coaching feedback, and exports."""
-    st.header(t("preview.header"))
+    data = collect_data()
+    _render_section_intro(
+        "☰",
+        t("preview.header"),
+        t("preview.analysis_title"),
+        _section_badges(
+            (t("app.signal_label"), f"{int(calculate_progress() * 100)}%"),
+            (t("app.priority_label"), t("app.priority_export")),
+        ),
+    )
 
     st.subheader(t("preview.analysis_title"))
     for tip in run_career_coach_checks():
@@ -544,8 +593,6 @@ def render_preview_download():
 
     st.divider()
     st.subheader(t("preview.resume_title"))
-    data = collect_data()
-
     with st.container(border=True):
         if data["full_name"]:
             st.markdown(f"## {data['full_name']}")
@@ -622,6 +669,7 @@ def render_preview_download():
             st.write("  ·  ".join(language_strings))
 
     st.divider()
+    _render_preview_signal_bar(data)
     st.subheader(t("preview.download_title"))
     st.download_button(
         t("preview.download_json"),
@@ -664,6 +712,7 @@ def render_preview_download():
 
 def render_main_area():
     """Dispatch the active section renderer."""
+    _render_shell_header()
     dispatch = {
         "Personal Info": render_personal_info,
         "Experience": render_experience,
@@ -675,6 +724,75 @@ def render_main_area():
     renderer = dispatch.get(st.session_state.current_section)
     if renderer:
         renderer()
+
+
+def _render_shell_header():
+    progress = int(calculate_progress() * 100)
+    navigation_items = _section_navigation_items()
+    ready_sections = sum(1 for item in navigation_items if item["state"] == "complete")
+    total_skills = len(all_skills_flat())
+    st.markdown(
+        "<section class='clearcv-shell'>"
+        f"<p class='clearcv-shell-kicker'>{escape(t('app.shell_label'))}</p>"
+        f"<h1>{escape(t('app.shell_title'))}</h1>"
+        f"<p class='clearcv-panel-copy'>{escape(t('app.shell_copy'))}</p>"
+        "<div class='clearcv-shell-grid'>"
+        f"<div class='clearcv-stat'><p class='clearcv-stat-label'>{escape(t('app.progress_title'))}</p><span class='clearcv-stat-value'>{progress}%</span></div>"
+        f"<div class='clearcv-stat'><p class='clearcv-stat-label'>{escape(t('app.active_section'))}</p><span class='clearcv-stat-value'>{escape(section_label(st.session_state.current_section))}</span></div>"
+        f"<div class='clearcv-stat'><p class='clearcv-stat-label'>{escape(t('app.sections_ready'))}</p><span class='clearcv-stat-value'>{ready_sections}/{len(navigation_items)}</span></div>"
+        f"<div class='clearcv-stat'><p class='clearcv-stat-label'>{escape(t('app.keyword_count'))}</p><span class='clearcv-stat-value'>{total_skills}</span></div>"
+        "</div>"
+        "</section>",
+        unsafe_allow_html=True,
+    )
+
+
+def _render_section_intro(icon: str, title: str, caption: str, badges: list[tuple[str, str]] | None = None):
+    badge_html = ""
+    if badges:
+        badge_html = "".join(
+            (
+                "<div class='clearcv-stat'>"
+                f"<p class='clearcv-stat-label'>{escape(label)}</p>"
+                f"<span class='clearcv-stat-value'>{escape(value)}</span>"
+                "</div>"
+            )
+            for label, value in badges
+        )
+    grid_html = f"<div class='clearcv-shell-grid'>{badge_html}</div>" if badge_html else ""
+
+    st.markdown(
+        "<section class='clearcv-panel-intro'>"
+        f"<p class='clearcv-panel-kicker'>{escape(t('app.panel_label'))}</p>"
+        f"<h2 class='clearcv-panel-title'>{escape(icon)} {escape(title)}</h2>"
+        f"<p class='clearcv-panel-copy'>{escape(caption)}</p>"
+        f"{grid_html}"
+        "</section>",
+        unsafe_allow_html=True,
+    )
+
+
+def _render_preview_signal_bar(data: dict):
+    extra_links = sum(1 for link in data.get("extra_links", []) if link.get("url"))
+    certifications = sum(1 for certification in data.get("certifications", []) if certification.get("name"))
+    languages_count = sum(1 for language in data.get("languages", []) if language.get("language"))
+    st.markdown(
+        "<section class='clearcv-preview-panel'>"
+        f"<p class='clearcv-panel-kicker'>{escape(t('app.preview_console'))}</p>"
+        f"<h3 class='clearcv-panel-title' style='font-size:1.05rem'>{escape(t('app.preview_console_title'))}</h3>"
+        "<div class='clearcv-shell-grid'>"
+        f"<div class='clearcv-stat'><p class='clearcv-stat-label'>{escape(t('section.experience'))}</p><span class='clearcv-stat-value'>{len(data.get('experiences', []))}</span></div>"
+        f"<div class='clearcv-stat'><p class='clearcv-stat-label'>{escape(t('section.education'))}</p><span class='clearcv-stat-value'>{len(data.get('educations', []))}</span></div>"
+        f"<div class='clearcv-stat'><p class='clearcv-stat-label'>{escape(t('section.extras'))}</p><span class='clearcv-stat-value'>{extra_links + certifications + languages_count}</span></div>"
+        f"<div class='clearcv-stat'><p class='clearcv-stat-label'>{escape(t('app.keyword_count'))}</p><span class='clearcv-stat-value'>{len(all_skills_flat())}</span></div>"
+        "</div>"
+        "</section>",
+        unsafe_allow_html=True,
+    )
+
+
+def _section_badges(*pairs: tuple[str, str]) -> list[tuple[str, str]]:
+    return list(pairs)
 
 
 def _skill_category_placeholder(category: str) -> str:
