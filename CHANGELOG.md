@@ -6,9 +6,19 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-18
+
+### Added
+
+- Multilingual support for English and Bahasa Indonesia across the app UI
+- Localized placeholders, example content, and language-specific sample resumes
+- Revamped sci-fi themed interface with a redesigned dashboard shell and modernized sidebar navigation
+
 ### Changed
 
 - Rebranded the project from ATS-Friendly Resume Builder to ClearCV Builder across the app and documentation
+- Improved dark theme support for the sidebar and navigation components
+- Refreshed the overall visual design to use a cleaner futuristic control-panel layout
 
 ## [0.1.0] - 2026-03-17
 
