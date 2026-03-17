@@ -1,5 +1,6 @@
 """Streamlit UI rendering for ClearCV Builder."""
 
+from html import escape
 import json
 import re
 from datetime import datetime
@@ -16,6 +17,7 @@ from .constants import (
 )
 from .data import (
     apply_resume_data,
+    all_skills_flat,
     calculate_progress,
     collect_data,
     export_resume_json,
@@ -29,16 +31,76 @@ from .utils import is_valid_email, is_valid_year, normalise_url, parse_skill_cat
 def render_sidebar():
     """Render the app sidebar and workspace actions."""
     with st.sidebar:
+        navigation_items = _section_navigation_items()
+        suggested_section = _suggested_section(navigation_items)
+        current_index = SECTION_KEYS.index(st.session_state.current_section) + 1
+
         st.markdown(
-            "<h2 style='margin-bottom:0'>📋 ClearCV Builder</h2>"
-            "<p style='color:grey;font-size:0.85em;margin-top:2px'>Clear, structured resumes · Career Coach Tips</p>",
+            "<div style='padding:1rem 1rem 0.25rem 1rem;background:var(--clearcv-surface);"
+            "border:1px solid var(--clearcv-border);border-radius:18px'>"
+            "<p style='margin:0;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--clearcv-muted)'>ClearCV Builder</p>"
+            "<h2 style='margin:0.25rem 0 0 0;color:var(--clearcv-text)'>📋 Build a clearer resume</h2>"
+            "<p style='color:var(--clearcv-muted);font-size:0.9rem;margin:0.35rem 0 0 0'>Structured sections, cleaner content, faster review.</p>"
+            "</div>",
             unsafe_allow_html=True,
         )
         st.divider()
 
         progress = calculate_progress()
-        st.caption(f"Profile completion: {int(progress * 100)}%")
+        st.markdown(
+            f"<div style='padding:0.85rem 1rem;background:var(--clearcv-progress);color:white;border-radius:18px'>"
+            f"<p style='margin:0;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--clearcv-progress-muted)'>Resume progress</p>"
+            f"<div style='display:flex;justify-content:space-between;align-items:end;gap:1rem'>"
+            f"<div><p style='margin:0.2rem 0 0 0;font-size:1.6rem;font-weight:700'>{int(progress * 100)}%</p></div>"
+            f"<p style='margin:0;font-size:0.86rem;color:var(--clearcv-progress-muted)'>Step {current_index} of {len(SECTION_KEYS)}</p>"
+            f"</div></div>",
+            unsafe_allow_html=True,
+        )
         st.progress(progress)
+
+        if suggested_section and suggested_section != st.session_state.current_section:
+            suggested_icon = next(icon for icon, label in SECTIONS if label == suggested_section)
+            if st.button(f"Continue with {suggested_icon} {suggested_section}", use_container_width=True, type="primary"):
+                st.session_state.current_section = suggested_section
+                st.rerun()
+
+        st.divider()
+
+        st.caption("Navigator")
+        for index, item in enumerate(navigation_items, start=1):
+            active = item["label"] == st.session_state.current_section
+            badge_bg = (
+                "var(--clearcv-accent)"
+                if item["state"] == "complete"
+                else "#f59e0b"
+                if item["state"] == "partial"
+                else "var(--clearcv-badge-empty-bg)"
+            )
+            badge_color = "white" if item["state"] != "empty" else "var(--clearcv-badge-empty-text)"
+            card_bg = "var(--clearcv-surface-active)" if active else "var(--clearcv-surface-strong)"
+            card_border = "var(--clearcv-accent)" if active else "var(--clearcv-border)"
+
+            st.markdown(
+                "<div style='padding:0.85rem 0.9rem;border-radius:18px;margin-bottom:0.45rem;"
+                f"background:{card_bg};border:1px solid {card_border}'>"
+                "<div style='display:flex;justify-content:space-between;align-items:flex-start;gap:0.8rem'>"
+                "<div>"
+                f"<p style='margin:0;font-size:0.76rem;color:var(--clearcv-muted);text-transform:uppercase;letter-spacing:0.08em'>Step {index}</p>"
+                f"<p style='margin:0.15rem 0 0 0;font-size:1rem;font-weight:700;color:var(--clearcv-text)'>{item['icon']} {escape(item['label'])}</p>"
+                f"<p style='margin:0.3rem 0 0 0;font-size:0.84rem;color:var(--clearcv-muted)'>{escape(item['summary'])}</p>"
+                "</div>"
+                f"<span style='display:inline-block;padding:0.25rem 0.55rem;border-radius:999px;background:{badge_bg};"
+                f"color:{badge_color};font-size:0.72rem;font-weight:700;white-space:nowrap'>{escape(item['status'])}</span>"
+                "</div></div>",
+                unsafe_allow_html=True,
+            )
+
+            if active:
+                st.button("Current section", key=f"nav_current_{item['label']}", use_container_width=True, disabled=True)
+            elif st.button(f"Open {item['label']}", key=f"nav_{item['label']}", use_container_width=True):
+                st.session_state.current_section = item["label"]
+                st.rerun()
+
         st.divider()
 
         st.caption("Workspace")
@@ -71,19 +133,6 @@ def render_sidebar():
                     st.rerun()
             except json.JSONDecodeError:
                 st.error("The uploaded file is not valid JSON.")
-
-        st.divider()
-        for icon, label in SECTIONS:
-            active = st.session_state.current_section == label
-            button_label = f"{icon}  {label}"
-            if active:
-                st.markdown(
-                    f"<div style='background:#1a6cf0;color:white;padding:8px 12px;border-radius:6px;margin-bottom:4px;font-weight:600'>{button_label}</div>",
-                    unsafe_allow_html=True,
-                )
-            elif st.button(button_label, key=f"nav_{label}", use_container_width=True):
-                st.session_state.current_section = label
-                st.rerun()
 
         st.divider()
         st.caption("💡 Tip: Fill every section for the clearest review-ready resume.")
@@ -342,7 +391,7 @@ def render_skills():
             skills_list = parse_skill_category(raw)
             if skills_list:
                 pills_html = " ".join(
-                    f"<span style='background:#e8f0fe;color:#1a6cf0;padding:2px 9px;border-radius:16px;font-size:0.82em;margin:2px;display:inline-block'>{skill}</span>"
+                    f"<span style='background:var(--clearcv-pill-bg);color:var(--clearcv-pill-text);padding:2px 9px;border-radius:16px;font-size:0.82em;margin:2px;display:inline-block'>{skill}</span>"
                     for skill in skills_list
                 )
                 st.markdown(pills_html, unsafe_allow_html=True)
@@ -621,3 +670,83 @@ def _nav_buttons(current: str):
         if idx < len(SECTION_KEYS) - 1 and st.button("Next →", key=f"next_{current}", type="primary"):
             st.session_state.current_section = SECTION_KEYS[idx + 1]
             st.rerun()
+
+
+def _section_navigation_items() -> list[dict[str, str]]:
+    personal_complete = bool(st.session_state.full_name.strip() and st.session_state.email.strip())
+    personal_has_content = bool(
+        st.session_state.full_name.strip()
+        or st.session_state.email.strip()
+        or st.session_state.professional_title.strip()
+        or st.session_state.summary.strip()
+    )
+
+    experience_count = sum(1 for item in st.session_state.experiences if item.get("title", "").strip())
+    education_count = sum(1 for item in st.session_state.educations if item.get("degree", "").strip())
+    skills_count = len(all_skills_flat())
+    filled_skill_categories = sum(1 for raw in st.session_state.skill_categories.values() if raw.strip())
+    extras_count = (
+        sum(1 for item in st.session_state.extra_links if item.get("url", "").strip())
+        + sum(1 for item in st.session_state.languages if item.get("language", "").strip())
+        + sum(1 for item in st.session_state.certifications if item.get("name", "").strip())
+    )
+    preview_ready = required_fields_filled() and is_valid_email(st.session_state.email)
+
+    return [
+        {
+            "icon": "👤",
+            "label": "Personal Info",
+            "summary": st.session_state.professional_title.strip() or "Add your name, email, and headline.",
+            **_state_meta(personal_complete, personal_has_content),
+        },
+        {
+            "icon": "💼",
+            "label": "Experience",
+            "summary": f"{experience_count} role(s) added." if experience_count else "Add your most relevant work history.",
+            **_state_meta(experience_count > 0, experience_count > 0),
+        },
+        {
+            "icon": "🎓",
+            "label": "Education",
+            "summary": f"{education_count} qualification(s) added." if education_count else "Add degrees, diplomas, or training.",
+            **_state_meta(education_count > 0, education_count > 0),
+        },
+        {
+            "icon": "🛠️",
+            "label": "Skills",
+            "summary": (
+                f"{skills_count} skill(s) across {filled_skill_categories} categor"
+                f"{'y' if filled_skill_categories == 1 else 'ies'}."
+                if skills_count
+                else "List the tools and strengths you want surfaced."
+            ),
+            **_state_meta(skills_count >= 8, skills_count > 0),
+        },
+        {
+            "icon": "🌐",
+            "label": "Extras",
+            "summary": f"{extras_count} optional item(s) added." if extras_count else "Add links, languages, or certifications.",
+            **_state_meta(extras_count > 0, extras_count > 0),
+        },
+        {
+            "icon": "📄",
+            "label": "Preview & Download",
+            "summary": "Ready to generate a PDF." if preview_ready else "Complete your core profile before export.",
+            **_state_meta(preview_ready, st.session_state.full_name.strip() or st.session_state.email.strip()),
+        },
+    ]
+
+
+def _state_meta(complete: bool, started: bool) -> dict[str, str]:
+    if complete:
+        return {"state": "complete", "status": "Ready"}
+    if started:
+        return {"state": "partial", "status": "In progress"}
+    return {"state": "empty", "status": "Start"}
+
+
+def _suggested_section(items: list[dict[str, str]]) -> str:
+    for item in items:
+        if item["state"] != "complete":
+            return item["label"]
+    return "Preview & Download"
