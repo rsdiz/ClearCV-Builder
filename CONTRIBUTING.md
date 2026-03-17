@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing. Keep changes focused, testable, and consistent with the project's ATS-first scope.
+Thanks for contributing. Keep changes focused, testable, and consistent with the project's clear, machine-readable resume-building scope.
 
 ## Development Setup
 
@@ -15,7 +15,7 @@ streamlit run app.py
 
 - Open an issue first for large feature changes, architectural shifts, or breaking behavior.
 - Keep pull requests small enough to review without reverse-engineering unrelated edits.
-- Preserve the project's focus on resume readability, ATS compatibility, and simple export flows.
+- Preserve the project's focus on resume readability, screening compatibility, and simple export flows.
 - Update documentation when user-facing behavior changes.
 - Avoid introducing heavy dependencies without a clear reason.
 

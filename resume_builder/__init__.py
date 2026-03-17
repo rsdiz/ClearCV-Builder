@@ -1,4 +1,4 @@
-"""ATS resume builder package."""
+"""ClearCV Builder package."""
 
 from .app import main
 

@@ -1,4 +1,4 @@
-"""PDF rendering for the resume builder."""
+"""PDF rendering for ClearCV Builder."""
 
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
@@ -65,7 +65,7 @@ class ResumePDF(FPDF):
 
 
 def generate_pdf(data: dict) -> bytes:
-    """Render a clean, ATS-friendly single-column PDF resume."""
+    """Render a clean, single-column PDF resume."""
     pdf = ResumePDF()
     pdf.add_page()
     margin = ResumePDF.MARGIN

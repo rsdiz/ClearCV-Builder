@@ -1,12 +1,12 @@
-# ATS-Friendly Resume Builder
+# ClearCV Builder
 
-ATS-Friendly Resume Builder is a Streamlit application for drafting a clean, single-column resume, reviewing common ATS issues, and exporting the final document to PDF.
+ClearCV Builder is a Streamlit application for drafting a clean, single-column resume, reviewing common screening issues, and exporting the final document to PDF.
 
 ## Why This Project Exists
 
 Many resume tools optimize for visual styling first and machine readability second. This project takes the opposite approach:
 
-- Keep the layout simple and ATS-friendly
+- Keep the layout simple and easy to parse
 - Help users catch weak or incomplete resume data early
 - Make resume data portable with JSON import and export
 - Generate a straightforward PDF without unnecessary formatting noise
@@ -15,7 +15,7 @@ Many resume tools optimize for visual styling first and machine readability seco
 
 - Guided resume builder for core resume sections
 - Inline validation for common formatting issues
-- ATS-oriented coaching and content checks
+- Resume screening-oriented coaching and content checks
 - Sample resume loader for demos and quick testing
 - JSON import and export for saving progress
 - PDF export powered by `fpdf2`

@@ -1,4 +1,4 @@
-"""Shared configuration and seed data for the resume builder."""
+"""Shared configuration and seed data for ClearCV Builder."""
 
 SECTIONS = [
     ("👤", "Personal Info"),

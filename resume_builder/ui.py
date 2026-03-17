@@ -1,4 +1,4 @@
-"""Streamlit UI rendering for the resume builder."""
+"""Streamlit UI rendering for ClearCV Builder."""
 
 import json
 import re
@@ -30,8 +30,8 @@ def render_sidebar():
     """Render the app sidebar and workspace actions."""
     with st.sidebar:
         st.markdown(
-            "<h2 style='margin-bottom:0'>📋 Resume Builder</h2>"
-            "<p style='color:grey;font-size:0.85em;margin-top:2px'>ATS-Friendly · Career Coach Tips</p>",
+            "<h2 style='margin-bottom:0'>📋 ClearCV Builder</h2>"
+            "<p style='color:grey;font-size:0.85em;margin-top:2px'>Clear, structured resumes · Career Coach Tips</p>",
             unsafe_allow_html=True,
         )
         st.divider()
@@ -86,7 +86,7 @@ def render_sidebar():
                 st.rerun()
 
         st.divider()
-        st.caption("💡 Tip: Fill every section for the best ATS score.")
+        st.caption("💡 Tip: Fill every section for the clearest review-ready resume.")
 
 
 def render_personal_info():
@@ -294,7 +294,7 @@ def render_education():
 def render_skills():
     """Render the skills section."""
     st.header("🛠️ Skills")
-    st.caption("Organise your skills by category. Mirror keywords from job descriptions to pass ATS filters.")
+    st.caption("Organise your skills by category. Mirror relevant keywords from job descriptions to improve screening matches.")
 
     for category in list(st.session_state.skill_categories.keys()):
         with st.container(border=True):

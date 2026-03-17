@@ -9,7 +9,7 @@ from .utils import is_valid_email, is_valid_year, normalise_url
 
 
 def run_career_coach_checks() -> list[dict]:
-    """Run ATS and content-quality checks against the current form state."""
+    """Run resume screening and content-quality checks against the current form state."""
     tips = []
 
     required = {
@@ -24,7 +24,7 @@ def run_career_coach_checks() -> list[dict]:
         tips.append(
             {
                 "level": "warning",
-                "msg": f"**Missing required fields:** {', '.join(missing)}. ATS systems may reject incomplete profiles.",
+                "msg": f"**Missing required fields:** {', '.join(missing)}. Incomplete profiles are harder for recruiters and screening tools to assess.",
             }
         )
     else:
@@ -75,7 +75,7 @@ def run_career_coach_checks() -> list[dict]:
         tips.append(
             {
                 "level": "info",
-                "msg": "**Add more skills.** ATS systems keyword-match against job descriptions. Aim for 8-15 relevant skills across categories.",
+                "msg": "**Add more skills.** Screening tools often keyword-match against job descriptions. Aim for 8-15 relevant skills across categories.",
             }
         )
     else:

@@ -9,7 +9,7 @@ from .ui import render_main_area, render_sidebar
 def main():
     """Run the Streamlit application."""
     st.set_page_config(
-        page_title="ATS Resume Builder",
+        page_title="ClearCV Builder",
         page_icon="📋",
         layout="wide",
         initial_sidebar_state="expanded",

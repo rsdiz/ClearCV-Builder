@@ -1,1 +1,1 @@
-"""Pytest configuration for resume builder tests."""
+"""Pytest configuration for ClearCV Builder tests."""

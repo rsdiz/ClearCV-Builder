@@ -1,4 +1,4 @@
-"""Thin launcher for the modular ATS resume builder."""
+"""Thin launcher for the modular ClearCV Builder app."""
 
 from resume_builder import main
 
