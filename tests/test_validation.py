@@ -84,3 +84,26 @@ def test_run_career_coach_checks_reports_success_for_complete_data(monkeypatch):
     assert any("Professional summary looks great." == message for message in messages)
     assert any("Experience descriptions contain quantified results" in message for message in messages)
     assert any("skills listed - solid keyword coverage" in message for message in messages)
+
+
+def test_run_career_coach_checks_can_translate_messages(monkeypatch):
+    session_state = SessionState(
+        ui_language="id",
+        full_name="",
+        email="",
+        phone="",
+        location="",
+        professional_title="",
+        summary="Pendek",
+        experiences=[],
+        educations=[],
+        linkedin="",
+        skill_categories={},
+    )
+    monkeypatch.setattr(validation.st, "session_state", session_state)
+
+    tips = validation.run_career_coach_checks()
+    messages = [tip["msg"] for tip in tips]
+
+    assert any("Field wajib belum diisi" in message for message in messages)
+    assert any("Ringkasan terlalu singkat" in message for message in messages)

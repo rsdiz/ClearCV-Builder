@@ -11,6 +11,7 @@ from .utils import clean_text, normalise_url, parse_skill_category
 def init_session_state():
     """Initialise all session state keys with safe defaults."""
     defaults = {
+        "ui_language": "en",
         "current_section": "Personal Info",
         "full_name": "",
         "email": "",

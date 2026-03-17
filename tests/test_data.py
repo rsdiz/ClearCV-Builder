@@ -13,6 +13,7 @@ def test_init_session_state_populates_defaults(monkeypatch):
 
     data.init_session_state()
 
+    assert session_state.ui_language == "en"
     assert session_state.current_section == "Personal Info"
     assert session_state.experiences == []
     assert session_state.skill_categories == {cat: "" for cat in DEFAULT_SKILL_CATEGORIES}

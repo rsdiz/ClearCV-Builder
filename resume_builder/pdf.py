@@ -4,6 +4,7 @@ from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 
 from .constants import PDF_DASH
+from .i18n import t
 
 _UNICODE_REPLACEMENTS = {
     "\u2014": "--",
@@ -64,7 +65,7 @@ class ResumePDF(FPDF):
         self.set_x(self.MARGIN)
 
 
-def generate_pdf(data: dict) -> bytes:
+def generate_pdf(data: dict, language: str = "en") -> bytes:
     """Render a clean, single-column PDF resume."""
     pdf = ResumePDF()
     pdf.add_page()
@@ -102,14 +103,14 @@ def generate_pdf(data: dict) -> bytes:
     pdf.ln(4)
 
     if data["summary"].strip():
-        pdf.section_header("Professional Summary")
+        pdf.section_header(t("pdf.professional_summary", language=language))
         pdf.set_font(font_family, "", 9.5)
         pdf.set_text_color(50, 50, 50)
         pdf.multi_cell(0, 5.5, sanitise(data["summary"].strip()))
         pdf.ln(2)
 
     if data["experiences"]:
-        pdf.section_header("Work Experience")
+        pdf.section_header(t("pdf.work_experience", language=language))
         for experience in data["experiences"]:
             pdf.set_font(font_family, "B", 10)
             pdf.set_text_color(20, 20, 20)
@@ -134,7 +135,7 @@ def generate_pdf(data: dict) -> bytes:
             pdf.ln(3)
 
     if data["educations"]:
-        pdf.section_header("Education")
+        pdf.section_header(t("pdf.education", language=language))
         for education in data["educations"]:
             pdf.set_font(font_family, "B", 10)
             pdf.set_text_color(20, 20, 20)
@@ -151,7 +152,7 @@ def generate_pdf(data: dict) -> bytes:
             pdf.ln(2)
 
     if any(values for values in data.get("skill_categories", {}).values()):
-        pdf.section_header("Skills")
+        pdf.section_header(t("pdf.skills", language=language))
         label_width = 44
         skills_width = usable_width - label_width
         for category, skills_list in data["skill_categories"].items():
@@ -171,7 +172,7 @@ def generate_pdf(data: dict) -> bytes:
         pdf.ln(2)
 
     if data.get("certifications"):
-        pdf.section_header("Certifications")
+        pdf.section_header(t("pdf.certifications", language=language))
         for certification in data["certifications"]:
             pdf.set_font(font_family, "B", 9.5)
             pdf.set_text_color(20, 20, 20)
@@ -188,7 +189,7 @@ def generate_pdf(data: dict) -> bytes:
         pdf.ln(2)
 
     if data.get("languages"):
-        pdf.section_header("Languages")
+        pdf.section_header(t("pdf.languages", language=language))
         pdf.set_font(font_family, "", 9.5)
         pdf.set_text_color(50, 50, 50)
         language_strings = []

@@ -5,6 +5,7 @@ import re
 import streamlit as st
 
 from .data import all_skills_flat
+from .i18n import t
 from .utils import is_valid_email, is_valid_year, normalise_url
 
 
@@ -13,27 +14,27 @@ def run_career_coach_checks() -> list[dict]:
     tips = []
 
     required = {
-        "Full Name": st.session_state.full_name,
-        "Email": st.session_state.email,
-        "Phone": st.session_state.phone,
-        "Location": st.session_state.location,
-        "Professional Title": st.session_state.professional_title,
+        t("field.full_name"): st.session_state.full_name,
+        t("field.email"): st.session_state.email,
+        t("field.phone"): st.session_state.phone,
+        t("field.location"): st.session_state.location,
+        t("field.professional_title"): st.session_state.professional_title,
     }
     missing = [field for field, value in required.items() if not value.strip()]
     if missing:
         tips.append(
             {
                 "level": "warning",
-                "msg": f"**Missing required fields:** {', '.join(missing)}. Incomplete profiles are harder for recruiters and screening tools to assess.",
+                "msg": t("validation.missing_required", fields=", ".join(missing)),
             }
         )
     else:
-        tips.append({"level": "success", "msg": "Contact information is complete."})
+        tips.append({"level": "success", "msg": t("validation.contact_complete")})
         if not is_valid_email(st.session_state.email):
             tips.append(
                 {
                     "level": "warning",
-                    "msg": "**Email format looks invalid.** Use a standard address such as name@example.com.",
+                    "msg": t("validation.invalid_email"),
                 }
             )
 
@@ -42,17 +43,17 @@ def run_career_coach_checks() -> list[dict]:
         tips.append(
             {
                 "level": "warning",
-                "msg": "**Summary too short.** Aim for at least 3 sentences covering: your role, key skills, and career goal.",
+                "msg": t("validation.summary_short"),
             }
         )
     else:
-        tips.append({"level": "success", "msg": "Professional summary looks great."})
+        tips.append({"level": "success", "msg": t("validation.summary_good")})
 
     if not st.session_state.experiences:
         tips.append(
             {
                 "level": "warning",
-                "msg": "**No work experience added.** Add at least one role to stand out.",
+                "msg": t("validation.no_experience"),
             }
         )
     else:
@@ -64,30 +65,30 @@ def run_career_coach_checks() -> list[dict]:
             tips.append(
                 {
                     "level": "info",
-                    "msg": f"**Add metrics to these roles:** {', '.join(unquantified)}. Quantified achievements (e.g., 'Grew revenue by 30%') dramatically improve interview callback rates.",
+                    "msg": t("validation.add_metrics", roles=", ".join(unquantified)),
                 }
             )
         else:
-            tips.append({"level": "success", "msg": "Experience descriptions contain quantified results - great work!"})
+            tips.append({"level": "success", "msg": t("validation.experience_good")})
 
     skills = all_skills_flat()
     if len(skills) < 5:
         tips.append(
             {
                 "level": "info",
-                "msg": "**Add more skills.** Screening tools often keyword-match against job descriptions. Aim for 8-15 relevant skills across categories.",
+                "msg": t("validation.add_skills"),
             }
         )
     else:
-        tips.append({"level": "success", "msg": f"{len(skills)} skills listed - solid keyword coverage."})
+        tips.append({"level": "success", "msg": t("validation.skills_good", count=len(skills))})
 
     if not st.session_state.linkedin.strip():
-        tips.append({"level": "info", "msg": "Adding a LinkedIn URL increases recruiter trust and profile visibility."})
+        tips.append({"level": "info", "msg": t("validation.linkedin_missing")})
     elif "linkedin.com/" not in normalise_url(st.session_state.linkedin):
         tips.append(
             {
                 "level": "info",
-                "msg": "LinkedIn field does not look like a LinkedIn profile URL. Double-check the link.",
+                "msg": t("validation.linkedin_invalid"),
             }
         )
 
@@ -100,7 +101,7 @@ def run_career_coach_checks() -> list[dict]:
         tips.append(
             {
                 "level": "warning",
-                "msg": f"**Check education year format:** {', '.join(invalid_years)} should use a 4-digit year.",
+                "msg": t("validation.invalid_years", entries=", ".join(invalid_years)),
             }
         )
 
